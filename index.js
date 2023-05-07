@@ -1,8 +1,8 @@
 
-// const { Telegraf } = require('telegraf');
-const { Composer } = require('micro-bot')
-const bot = new Composer()
-// const bot = new Telegraf('6034344847:AAHeX6ZckGkdBOdPwu1y9hYoxnhJ9I74TTg');
+const { Telegraf } = require('telegraf');
+// const { Composer } = require('micro-bot')
+// const bot = new Composer()
+const bot = new Telegraf('6034344847:AAHeX6ZckGkdBOdPwu1y9hYoxnhJ9I74TTg');
 const mongoose = require("mongoose");
 const express = require("express");
 
@@ -814,5 +814,5 @@ function isShopOwner(ctx) {
     }
   });
 
-// bot.launch();
-module.exports = bot
+bot.launch();
+// module.exports = bot
