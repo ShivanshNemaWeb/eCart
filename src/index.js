@@ -1,8 +1,8 @@
 
 const { Telegraf } = require('telegraf');
 // const { Composer } = require('micro-bot')
-// const bot = new Composer()
-const bot = new Telegraf('6034344847:AAHeX6ZckGkdBOdPwu1y9hYoxnhJ9I74TTg');
+// const bot = new Composer()6034344847:AAHeX6ZckGkdBOdPwu1y9hYoxnhJ9I74TTg
+const bot = new Telegraf('6255794434:AAFtjmBthCvEk8BpAM5M31poX7lQw-XB6pw');
 const mongoose = require("mongoose");
 const express = require("express");
 
@@ -25,6 +25,14 @@ connectDB()
     console.log(error);
     console.log("Not Connected to database");
   });
+
+  //connect to server
+  app.get('/',(req,res)=>{
+    consolele.log("hello world");
+  })
+  app.listen(3000,()=>{
+    console.log("Listning at port 3000");
+  })
   //Cart Schema---------------------------------------->
   const CartSchema = new mongoose.Schema({
     customer_id: Number,
