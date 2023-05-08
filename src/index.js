@@ -32,7 +32,7 @@ connectDB()
 
   //connect to server
   app.get('/',(req,res)=>{
-    consolele.log("hello world");
+    console.log("hello world");
   })
   app.listen(3000,()=>{
     console.log("Listning at port 3000");
