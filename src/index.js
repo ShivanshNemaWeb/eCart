@@ -1,4 +1,8 @@
 
+const fs = require('fs');
+  const path = require('path');
+  
+  const lockfile = path.join(__dirname, '.lock');
 const { Telegraf } = require('telegraf');
 // const { Composer } = require('micro-bot')
 // const bot = new Composer()6034344847:AAHeX6ZckGkdBOdPwu1y9hYoxnhJ9I74TTg
@@ -187,6 +191,7 @@ const products = [
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   // send error report, log error, or handle the rejection in some other way
+  stopBot();
   // process.exit(1); // terminate the process with a non-zero exit code
 });
 
@@ -825,6 +830,62 @@ function isShopOwner(ctx) {
       ctx.reply('Sorry, something went wrong while fetching your cart items.');
     }
   });
-
+  
+  
+  async function acquireLock() {
+    return new Promise((resolve, reject) => {
+      fs.open(lockfile, 'wx', (err, fd) => {
+        if (err) {
+          if (err.code === 'EEXIST') {
+            return reject(new Error('Lock already acquired'));
+          }
+          return reject(err);
+        }
+  
+        fs.close(fd, (err) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve();
+        });
+      });
+    });
+  }
+  
+  async function releaseLock() {
+    return new Promise((resolve, reject) => {
+      fs.unlink(lockfile, (err) => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            return reject(new Error('Lock already released'));
+          }
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  }
+  
+  // Before starting the bot, acquire the lock
+  async function startBot() {
+    try {
+      await acquireLock();
+      // start the bot
+    } catch (err) {
+      console.error('Error acquiring lock:', err.message);
+      process.exit(1);
+    }
+  }
+  
+  // When the bot stops, release the lock
+  async function stopBot() {
+    try {
+      await releaseLock();
+    } catch (err) {
+      console.error('Error releasing lock:', err.message);
+      process.exit(1);
+    }
+  }
+  startBot();
 bot.launch();
 // module.exports = bot
