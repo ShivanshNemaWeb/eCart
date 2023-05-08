@@ -1,23 +1,24 @@
 
 const fs = require('fs');
   const path = require('path');
-  
   const lockfile = path.join(__dirname, '.lock');
 const { Telegraf } = require('telegraf');
-// const { Composer } = require('micro-bot')
-// const bot = new Composer()6034344847:AAHeX6ZckGkdBOdPwu1y9hYoxnhJ9I74TTg
-const bot = new Telegraf('6255794434:AAFtjmBthCvEk8BpAM5M31poX7lQw-XB6pw');
+// 6255794434:AAFtjmBthCvEk8BpAM5M31poX7lQw-XB6pw
+const bot = new Telegraf('5983815605:AAG3rQwnaXdaVu7uZziRG9I1tF-vYhISB4o');
 const mongoose = require("mongoose");
 const express = require("express");
-
 const app = express();
-// MongoDB connection string
 const connectDB = async () => {
-  await mongoose.connect("mongodb+srv://shivanshnema83:eCart21@cluster0.yjdiva9.mongodb.net/", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  console.log("CONNECTED TO DATABASE!");
+  try {
+    await mongoose.connect("mongodb+srv://shivanshnema83:eCart21@cluster0.yjdiva9.mongodb.net/", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("CONNECTED TO DATABASE!");
+  } catch (error) {
+    console.log(error);
+    console.log("Failed to connect to database");
+  }
 };
 connectDB()
   .then(() => {
@@ -29,14 +30,13 @@ connectDB()
     console.log(error);
     console.log("Not Connected to database");
   });
-
   //connect to server
-  app.get('/',(req,res)=>{
-    console.log("hello world");
-  })
-  app.listen(3000,()=>{
-    console.log("Listning at port 3000");
-  })
+  // app.get('/',(req,res)=>{
+  //   console.log("hello world");
+  // })
+  // app.listen(3000,()=>{
+  //   console.log("Listning at port 3000");
+  // })
   //Cart Schema---------------------------------------->
   const CartSchema = new mongoose.Schema({
     customer_id: Number,
@@ -45,7 +45,6 @@ connectDB()
   });
   const Cart=new mongoose.model('Cart',CartSchema);
   //Order Schema-------------------------------------------->
-
 const orderSchema = new mongoose.Schema({
   customer_id: {
     type: String,
@@ -92,9 +91,7 @@ const orderSchema = new mongoose.Schema({
     require:true
   }
 });
-
 const Order = mongoose.model('Order', orderSchema);
-
 // sample product data
 const products = [
   {
@@ -188,14 +185,7 @@ const products = [
     brand: 'Harpic'
   }
 ];
-// process.on('unhandledRejection', (reason, promise) => {
-//   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-//   // send error report, log error, or handle the rejection in some other way
-//   // stopBot();
-//   // process.exit(1); // terminate the process with a non-zero exit code
-// });
 
-// start command handler
 bot.command('start', (ctx) => {
     ctx.deleteMessage();
     ctx.reply('Welcome to eCart! Please tell me who are you?', {
@@ -216,7 +206,6 @@ bot.command('start', (ctx) => {
       }
     });
   });
-
 // customer callback query handler
 bot.action('customer', (ctx) => {
   // send the product list in separate messages
@@ -231,7 +220,6 @@ bot.action('customer', (ctx) => {
     message += `Type: <b>${product.type}</b>\n`;
     message += `Brand:<b> ${product.brand}</b>\n\n`;
     message += `<b>Press the "Add to Cart" button to add the product in your cart.</b>`;
-
     // send the message with a "Buy Now" button
     ctx.telegram.sendMessage(ctx.chat.id, message, {
       parse_mode: 'HTML',
@@ -243,62 +231,9 @@ bot.action('customer', (ctx) => {
     });
   });
 });
-
-// add to cart callback query handler--------------------------------->
-// bot.action(/^buy_(.*)/, async (ctx) => {
-//     const productName = ctx.match[1];
-//     const product = products.find(p => p.name === productName);
-  
-//     // ask the customer for the quantity they want to purchase
-//     const sentMessage = await ctx.telegram.sendMessage(ctx.chat.id, `How many "${product.name}" do you want to purchase?`, {
-//       reply_markup: {
-//         force_reply: true
-//       }
-//     });
-  
-//     // save the product purchase information to MongoDB
-//     const quantityListener = (quantityCtx) => {
-//       if (quantityCtx.message.reply_to_message && quantityCtx.message.reply_to_message.message_id === sentMessage.message_id) {
-//         const quantity = Number(quantityCtx.message.text);
-//         if (isNaN(quantity) || quantity <= 0 || quantity > product.quantity) {
-//           ctx.reply(`Please enter a valid quantity between 1 and ${product.quantity}.`);
-//         } else {
-//           // add the product to the cart in MongoDB
-          
-  
-//           const newCartItem = new Cart({
-//             customer_id: ctx.from.id,
-//             product_name: product.name,
-//             quantity: quantity
-//           });
-  
-//           newCartItem.save().then(() => {
-//             ctx.reply(`"${product.name}" has been added to your cart. Click  on "MyCart" to place order now" .`,
-//               {
-//                 reply_markup: {
-//                   inline_keyboard: [
-//                     [{ text: 'Back to Menu', callback_data: 'customer' },{ text: 'MyCart', callback_data: 'myCart' }]
-//                   ]
-//                 }
-//               })
-//               bot.hears(/^\d+$/, quantityListener, true);
-//           }).catch((err) => {
-//             console.error(err);
-//             ctx.reply('Sorry, something went wrong while adding the item to your cart.');
-//           });
-          
-//         }
-//       }
-//     }
-
-//     bot.hears(/^\d+$/, quantityListener, true);
-//     // quantityHears.remove();
-//     });
-
 bot.action(/^buy_(.*)/, async (ctx) => {
   const productName = ctx.match[1];
   const product = products.find(p => p.name === productName);
-
   // save the product purchase information to MongoDB
   const newCartItem = new Cart({
     customer_id: ctx.from.id,
@@ -373,15 +308,7 @@ bot.action(/^decrement_(.*)/, async (ctx) => {
     }
   }
 });
-
-
-
-
-
     //My Cart---------------------------------------------->
-
-
-// myCart callback query handler
 bot.action('myCart', async (ctx) => {
   try {
     // find all items in user's cart
@@ -398,7 +325,6 @@ bot.action('myCart', async (ctx) => {
       });
       return;
     }
-
     // calculate the total price of all items
     let totalPrice = 0;
     const keyboard = [];
@@ -407,10 +333,8 @@ bot.action('myCart', async (ctx) => {
       totalPrice += product.price * item.quantity;
       keyboard.push([{ text: `Remove ${product.name}`, callback_data: `remove_${item._id}` }]);
     }
-
     // create a message for the cart
     let message = '';
-    
     for (const item of cartItems) {
       const product = products.find(p => p.name === item.product_name);
       message += `<b>${product.name}</b>\n`;
@@ -439,9 +363,7 @@ bot.action('myCart', async (ctx) => {
     ctx.reply('Sorry, something went wrong while fetching your cart items.');
   }
 });
-
 // // remove callback query handler
-
 bot.action(/^remove_(.+)/, async (ctx) => {
   try {
     const itemId = ctx.match[1];
@@ -476,7 +398,6 @@ bot.action(/^remove_(.+)/, async (ctx) => {
       });
       return;
     }
-
     // calculate the total price of all items
     let totalPrice = 0;
     const keyboard = [];
@@ -485,7 +406,6 @@ bot.action(/^remove_(.+)/, async (ctx) => {
       totalPrice += product.price * item.quantity;
       keyboard.push([{ text: `Remove ${product.name}`, callback_data: `remove_${item._id}` }]);
     }
-
     // create a message for the cart
     let message = '';
     for (const item of cartItems) {
@@ -516,7 +436,6 @@ bot.action(/^remove_(.+)/, async (ctx) => {
     ctx.reply('Sorry, something went wrong while removing the item from your cart.');
   }
 });
-
 //Place Order------------------------------------------------------------------------>
 // place order callback query handler
 bot.action('placeOrder', async (ctx) => {
@@ -583,10 +502,8 @@ bot.action('selfDelivery', async (ctx) => {
       products:productss
     });
     await order.save();
-
     // delete the cart items
     await Cart.deleteMany({ customer_id: ctx.from.id });
-
     // send the order message
     ctx.telegram.sendMessage(ctx.chat.id, message, {
       parse_mode: 'HTML',
@@ -599,20 +516,17 @@ bot.action('selfDelivery', async (ctx) => {
     ctx.reply('Sorry, something went wrong while placing your order.');
   }
 });
-
 // shopkeeper delivery callback query handler
 bot.action('shopkeeperDelivery', async (ctx) => {
  try {
     // generate order ID
     const orderId = Math.floor(Math.random() * 1000000) + 1;
-
     // find all items in user's cart
     const cartItems = await Cart.find({ customer_id: ctx.from.id });
     if (cartItems.length === 0) {
       ctx.reply('Your cart is empty.');
       return;
     }
-
     // calculate the total price of all items
     let totalPrice = 0;
     let message = '';
@@ -646,10 +560,8 @@ bot.action('shopkeeperDelivery', async (ctx) => {
       products:productss
     });
     await order.save();
-
     // delete the cart items
     await Cart.deleteMany({ customer_id: ctx.from.id });
-
     // send the order message
     ctx.telegram.sendMessage(ctx.chat.id, message, {
       parse_mode: 'HTML',
@@ -662,24 +574,17 @@ bot.action('shopkeeperDelivery', async (ctx) => {
     ctx.reply('Sorry, something went wrong while processing your request.');
   }
 });
-
-
 //Shop Owner------------------------------------------------------------------------------------------------------------>
-
-
 // Handle the "shop owner" command
 bot.action('Shop Owner', async (ctx) => {
   // Ask for the password
   const SHOP_OWNER_PASSWORD = 'password123';
-
 // // Define a variable to keep track of whether the shop owner is authenticated
 let isShopOwnerAuthenticated = false;
-
 // // Define a function to check if the user is the shop owner
 function isShopOwner(ctx) {
   return ctx.message.text === SHOP_OWNER_PASSWORD;
 }
-
   await ctx.reply('Please enter the shop owner password:');
 
   // Set the "shop owner" state
@@ -744,7 +649,6 @@ function isShopOwner(ctx) {
           await ctx.answerCbQuery('Order has been accepted successfully.');
         }
       });
-
       bot.action(/^decline_(.*)/, async (ctx) => {
         // Check if the shop owner is authenticated
         if (isShopOwnerAuthenticated) {
@@ -771,7 +675,6 @@ function isShopOwner(ctx) {
   });
  
 });
-
   //mycart Command ------------------------------------------------------------------------------------------>
   bot.command('mycart', async (ctx) => {
     try {
@@ -830,62 +733,7 @@ function isShopOwner(ctx) {
       ctx.reply('Sorry, something went wrong while fetching your cart items.');
     }
   });
-  
-  
-  async function acquireLock() {
-    return new Promise((resolve, reject) => {
-      fs.open(lockfile, 'wx', (err, fd) => {
-        if (err) {
-          if (err.code === 'EEXIST') {
-            return reject(new Error('Lock already acquired'));
-          }
-          return reject(err);
-        }
-  
-        fs.close(fd, (err) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve();
-        });
-      });
-    });
-  }
-  
-  async function releaseLock() {
-    return new Promise((resolve, reject) => {
-      fs.unlink(lockfile, (err) => {
-        if (err) {
-          if (err.code === 'ENOENT') {
-            return reject(new Error('Lock already released'));
-          }
-          return reject(err);
-        }
-        resolve();
-      });
-    });
-  }
-  
-  // Before starting the bot, acquire the lock
-  async function startBot() {
-    try {
-      await acquireLock();
-      // start the bot
-    } catch (err) {
-      console.error('Error acquiring lock:', err.message);
-      process.exit(1);
-    }
-  }
-  
-  // When the bot stops, release the lock
-  async function stopBot() {
-    try {
-      await releaseLock();
-    } catch (err) {
-      console.error('Error releasing lock:', err.message);
-      process.exit(1);
-    }
-  }
-  // startBot();
+ 
+ 
 bot.launch();
 // module.exports = bot
