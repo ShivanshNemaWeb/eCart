@@ -188,12 +188,12 @@ const products = [
     brand: 'Harpic'
   }
 ];
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // send error report, log error, or handle the rejection in some other way
-  // stopBot();
-  // process.exit(1); // terminate the process with a non-zero exit code
-});
+// process.on('unhandledRejection', (reason, promise) => {
+//   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+//   // send error report, log error, or handle the rejection in some other way
+//   // stopBot();
+//   // process.exit(1); // terminate the process with a non-zero exit code
+// });
 
 // start command handler
 bot.command('start', (ctx) => {
